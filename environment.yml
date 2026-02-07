@@ -1,0 +1,26 @@
+name: dgm
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python>=3.10
+  - pytorch>=2.1.0
+  - torchvision>=0.16.0
+  - numpy>=1.24.0
+  - matplotlib>=3.7.0
+  - tqdm>=4.65.0
+
+  # Webapp
+  - streamlit>=1.30.0
+
+  # Development
+  - pytest>=7.4.0
+  - pytest-cov>=4.1.0
+  - ruff>=0.3.0
+
+  # Install the dgm package itself in editable mode
+  - pip
+  - pip:
+      - -e .

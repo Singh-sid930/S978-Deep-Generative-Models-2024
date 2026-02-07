@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+.eggs/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Type checking / linting caches
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Jupyter Notebook checkpoints
+*.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Model checkpoints and weights
+*.pt
+*.pth
+*.ckpt
+
+# Data directory (downloaded datasets)
+data/
+
+# Experiment tracking
+wandb/
+runs/
+
+# Claude Code
+.claude/
