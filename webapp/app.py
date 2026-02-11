@@ -3,6 +3,15 @@
 Entry point: streamlit run webapp/app.py
 """
 
+import sys
+from pathlib import Path
+
+# Ensure the repo root is on sys.path so `webapp.*` imports work
+# regardless of where streamlit is launched from.
+_repo_root = str(Path(__file__).resolve().parent.parent)
+if _repo_root not in sys.path:
+    sys.path.insert(0, _repo_root)
+
 import streamlit as st
 
 from webapp.course_manifest import COURSE_SCHEDULE

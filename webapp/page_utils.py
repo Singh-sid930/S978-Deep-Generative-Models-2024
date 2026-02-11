@@ -10,8 +10,8 @@ from webapp.course_manifest import COURSE_SCHEDULE, Session
 from webapp.style import apply_style, WEEK_TITLES, session_type_badge
 
 
-def render_week(week_number: int):
-    """Render a complete week page from the course manifest."""
+def setup_page(week_number: int):
+    """Call first in any page. Sets page config + applies CSS + renders page header (week number + title)."""
     week_title = WEEK_TITLES.get(week_number, f"Week {week_number}")
     st.set_page_config(
         page_title=f"Week {week_number} - {week_title}",
@@ -20,12 +20,15 @@ def render_week(week_number: int):
     )
     apply_style()
 
-    sessions = COURSE_SCHEDULE.get(week_number, [])
-
     # Page header
     st.markdown(f"##### Week {week_number}")
     st.markdown(f"# {week_title}")
     st.markdown("---")
+
+
+def render_sessions(week_number: int):
+    """Render the session blocks from the course manifest for a given week."""
+    sessions = COURSE_SCHEDULE.get(week_number, [])
 
     if not sessions:
         st.markdown("*No sessions scheduled for this week.*")
@@ -36,14 +39,84 @@ def render_week(week_number: int):
         if i < len(sessions) - 1:
             st.markdown("---")
 
-    # Assignment placeholder
+
+def render_assignments(modules: list[str] | None = None):
+    """Render the assignment section. If modules provided, show which dgm.* modules to implement."""
     st.markdown("---")
     st.markdown("## Assignments")
-    st.markdown(
-        '<p class="caption">Coming soon -- assignments and exercises '
-        "will appear here as they are developed.</p>",
-        unsafe_allow_html=True,
-    )
+
+    if modules is None:
+        st.markdown(
+            '<p class="caption">Coming soon -- assignments and exercises '
+            "will appear here as they are developed.</p>",
+            unsafe_allow_html=True,
+        )
+    else:
+        # Show module badges
+        modules_str = " &nbsp; ".join(f"`{m}`" for m in modules)
+        st.markdown(f"**Implement these modules:** {modules_str}", unsafe_allow_html=True)
+
+        # Show test command for the first module (simplified)
+        if modules:
+            test_path = modules[0].replace("dgm.", "test_").replace(".", "/")
+            st.markdown(f"**Run tests:** `pytest tests/{test_path}/ -v`")
+
+
+def render_mermaid(chart: str, height: int = 500):
+    """Render a Mermaid diagram in the Streamlit page.
+
+    Args:
+        chart: Mermaid chart definition string (e.g., "graph TD; A-->B")
+        height: Height of the rendered diagram container in pixels
+    """
+    import streamlit.components.v1 as components
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+        <script>
+            mermaid.initialize({{
+                startOnLoad: true,
+                theme: 'neutral',
+                themeVariables: {{
+                    primaryColor: '#F5F5F4',
+                    primaryTextColor: '#292524',
+                    primaryBorderColor: '#D6D3D1',
+                    lineColor: '#78716C',
+                    secondaryColor: '#FAFAF9',
+                    tertiaryColor: '#E7E5E4',
+                    fontSize: '18px',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                }}
+            }});
+        </script>
+        <style>
+            .mermaid svg {{
+                max-width: 100%;
+                height: auto;
+            }}
+            .node rect, .node circle, .node polygon {{
+                stroke-width: 2px !important;
+            }}
+        </style>
+    </head>
+    <body style="margin:0; padding:1rem 0; display:flex; justify-content:center; background:transparent;">
+        <div class="mermaid" style="width:100%;">
+{chart}
+        </div>
+    </body>
+    </html>
+    """
+    components.html(html, height=height)
+
+
+def render_week(week_number: int):
+    """Render a complete week page (backward compatible)."""
+    setup_page(week_number)
+    render_sessions(week_number)
+    render_assignments()
 
 
 def _render_session(session: Session):
