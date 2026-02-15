@@ -142,3 +142,7 @@ st.markdown(
     "4. **`src/dgm/vae/loss.py`** — `vae_loss()`: compute reconstruction loss + KL divergence\n\n"
     "Each file has detailed hints in the docstrings. Read them carefully before implementing."
 )
+
+from webapp.chat import render_chat
+
+render_chat(2)

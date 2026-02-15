@@ -91,3 +91,7 @@ st.markdown(
 | 11-13 | Applications | Video, 3D, robotics, molecules, proteins |
 """
 )
+
+from webapp.chat import render_chat
+
+render_chat(1)

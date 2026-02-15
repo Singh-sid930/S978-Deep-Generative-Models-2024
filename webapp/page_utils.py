@@ -117,6 +117,8 @@ def render_week(week_number: int):
     setup_page(week_number)
     render_sessions(week_number)
     render_assignments()
+    from webapp.chat import render_chat
+    render_chat(week_number)
 
 
 def _render_session(session: Session):

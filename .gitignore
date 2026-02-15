@@ -40,5 +40,8 @@ data/
 wandb/
 runs/
 
+# Streamlit config
+.streamlit/
+
 # Claude Code
 .claude/

@@ -39,7 +39,14 @@ dev = [
     "pytest-cov>=4.1.0",
     "ruff>=0.3.0",
 ]
-all = ["dgm[webapp,dev]"]
+chat = [
+    "anthropic>=0.39.0",
+    "chromadb>=0.5.0",
+    "sentence-transformers>=2.2.0",
+    "PyMuPDF>=1.24.0",
+    "python-dotenv>=1.0.0",
+]
+all = ["dgm[webapp,chat,dev]"]
 
 [project.urls]
 Homepage = "https://github.com/yourusername/S978-Deep-Generative-Models-2024"
