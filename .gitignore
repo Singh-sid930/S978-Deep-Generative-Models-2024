@@ -34,14 +34,18 @@ venv/
 *.ckpt
 
 # Data directory (downloaded datasets)
-data/
+/data/
+
+# Downloaded reading PDFs (too large for git)
+static/readings/
 
 # Experiment tracking
 wandb/
 runs/
 
-# Streamlit config
-.streamlit/
+# Streamlit config (keep config.toml, ignore cache)
+.streamlit/*
+!.streamlit/config.toml
 
 # Claude Code
 .claude/

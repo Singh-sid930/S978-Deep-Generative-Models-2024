@@ -4,10 +4,55 @@ Each page imports render_week() to display its content,
 keeping individual page files minimal.
 """
 
+import json
+import os
+import re
+
 import streamlit as st
 
-from webapp.course_manifest import COURSE_SCHEDULE, Session
+from webapp.course_manifest import COURSE_SCHEDULE, Reading, Session
 from webapp.style import apply_style, WEEK_TITLES, session_type_badge
+
+# Load local PDF index (two sections: "arxiv" and "url")
+_INDEX_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "readings", "index.json")
+_ARXIV_INDEX: dict = {}
+_URL_INDEX: dict = {}
+if os.path.exists(_INDEX_PATH):
+    with open(_INDEX_PATH) as _f:
+        _data = json.load(_f)
+        _ARXIV_INDEX = _data.get("arxiv", {})
+        _URL_INDEX = _data.get("url", {})
+
+
+def _local_pdf_url(reading: Reading) -> str | None:
+    """Return a static-served URL for a reading's local PDF, if available.
+
+    Checks two mappings:
+    1. Extract arxiv ID from URL and look up in arxiv index
+    2. Look up full URL in url index
+    """
+    # First try: arxiv lookup
+    match = re.search(r"arxiv\.org/(?:abs|pdf)/([\d.]+)", reading.url)
+    if match:
+        arxiv_id = match.group(1)
+        entry = _ARXIV_INDEX.get(arxiv_id)
+        if entry:
+            week = entry["week"]
+            filename = entry["filename"]
+            local_path = os.path.join("data", "readings", f"week_{week:02d}", filename)
+            if os.path.exists(local_path):
+                return f"/app/static/readings/week_{week:02d}/{filename}"
+
+    # Second try: direct URL lookup
+    entry = _URL_INDEX.get(reading.url)
+    if entry:
+        week = entry["week"]
+        filename = entry["filename"]
+        local_path = os.path.join("data", "readings", f"week_{week:02d}", filename)
+        if os.path.exists(local_path):
+            return f"/app/static/readings/week_{week:02d}/{filename}"
+
+    return None
 
 
 def setup_page(week_number: int):
@@ -152,17 +197,22 @@ def _render_session(session: Session):
 
         if required:
             for r in required:
-                st.markdown(
-                    f"- [{r.title}]({r.url})  \n"
-                    f'  <span class="caption">{r.authors} -- {r.venue} {r.year}</span>',
-                    unsafe_allow_html=True,
-                )
+                _render_reading(r)
 
         if optional:
             with st.expander("Optional readings"):
                 for r in optional:
-                    st.markdown(
-                        f"- [{r.title}]({r.url})  \n"
-                        f'  <span class="caption">{r.authors} -- {r.venue} {r.year}</span>',
-                        unsafe_allow_html=True,
-                    )
+                    _render_reading(r)
+
+
+def _render_reading(r: Reading):
+    """Render a single reading entry with optional local PDF link."""
+    local_url = _local_pdf_url(r)
+    link = f"[{r.title}]({local_url})" if local_url else f"[{r.title}]({r.url})"
+    desc = f"  \n  {r.description}" if r.description else ""
+    st.markdown(
+        f"- {link}  \n"
+        f'  <span class="caption">{r.authors} -- {r.venue} {r.year}</span>'
+        f"{desc}",
+        unsafe_allow_html=True,
+    )

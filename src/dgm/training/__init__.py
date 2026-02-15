@@ -3,4 +3,6 @@
 Shared training loops, callbacks, logging, and evaluation metrics.
 """
 
-__all__: list[str] = []
+from dgm.training.vae_trainer import TrainingHistory, train_vae
+
+__all__ = ["train_vae", "TrainingHistory"]

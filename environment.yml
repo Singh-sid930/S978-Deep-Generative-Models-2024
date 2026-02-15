@@ -23,4 +23,4 @@ dependencies:
   # Install the dgm package itself in editable mode
   - pip
   - pip:
-      - -e ".[chat]"
+      - -e ".[all]"
