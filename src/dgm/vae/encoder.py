@@ -82,7 +82,12 @@ class Encoder(nn.Module):
         Reference:
             Kingma & Welling, "Auto-Encoding Variational Bayes", 2013, Eq. 9-10.
         """
-        raise NotImplementedError("Implement the encoder forward pass.")
+        x = x.flatten(1,-1).reshape(x.shape[0], self.input_dim)
+        x = self.network(x)
+        mu = self.fc_mu(x)
+        log_var = self.fc_log_var(x)
+        
+        return (mu, log_var)
 
     def __repr__(self) -> str:
         """Return string representation of the encoder."""

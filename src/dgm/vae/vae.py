@@ -88,7 +88,11 @@ class VAE(nn.Module):
         Reference:
             Kingma & Welling, "Auto-Encoding Variational Bayes", 2013, Section 2.4.
         """
-        raise NotImplementedError("Implement the reparameterization trick.")
+        std = torch.exp(0.5 * log_var)
+        eps = torch.randn_like(std)
+        z = mu + std*eps
+        
+        return z
 
     def forward(
         self, x: torch.Tensor
@@ -117,7 +121,11 @@ class VAE(nn.Module):
         Reference:
             Kingma & Welling, "Auto-Encoding Variational Bayes", 2013, Algorithm 1.
         """
-        raise NotImplementedError("Implement the VAE forward pass.")
+        mu, log_var = self.encoder(x)
+        z = self.reparameterize(mu, log_var)
+        recons = self.decoder(z)
+
+        return(recons, mu, log_var)
 
     @torch.no_grad()
     def sample(self, num_samples: int, device: torch.device) -> torch.Tensor:
@@ -143,7 +151,10 @@ class VAE(nn.Module):
         Reference:
             Kingma & Welling, "Auto-Encoding Variational Bayes", 2013, Section 2.3.
         """
-        raise NotImplementedError("Implement the sampling function.")
+        z = torch.randn(num_samples, self.latent_dim)
+        z = z.to(device)
+        gen = self.decoder(z)
+        return gen
 
     def __repr__(self) -> str:
         """Return string representation of the VAE."""

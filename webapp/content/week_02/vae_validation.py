@@ -77,6 +77,7 @@ and verify it produces meaningful results.
         history = train_vae(
             model, loaders.train,
             epochs=epochs, lr=learning_rate,
+            device=torch.device("cpu"),
             recon_loss_type="bce",
             progress_callback=update_progress,
         )

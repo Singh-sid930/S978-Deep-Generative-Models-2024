@@ -80,7 +80,8 @@ class Decoder(nn.Module):
         Reference:
             Kingma & Welling, "Auto-Encoding Variational Bayes", 2013, Eq. 11-12.
         """
-        raise NotImplementedError("Implement the decoder forward pass.")
+        res = self.network(z)
+        return res
 
     def __repr__(self) -> str:
         """Return string representation of the decoder."""

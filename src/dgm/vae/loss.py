@@ -61,4 +61,15 @@ def vae_loss(
         Kingma & Welling, "Auto-Encoding Variational Bayes", 2013, Appendix B.
         KL divergence formula: Appendix B, Equation (10).
     """
-    raise NotImplementedError("Implement the VAE loss function.")
+    batch_size = x.shape[0]
+    if recon_loss_type == "bce":
+        recon_loss = F.binary_cross_entropy(recon_x, x, reduction = 'sum')/batch_size
+    else:
+        recon_loss = F.mse_loss(recon_x, x, reduction = 'sum')/batch_size
+    
+    kl_loss = -0.5*torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
+    kl_loss = kl_loss / batch_size
+
+    total_loss = recon_loss + kl_loss
+
+    return (total_loss, recon_loss, kl_loss)
